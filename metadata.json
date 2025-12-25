@@ -1,0 +1,8 @@
+{
+  "name": "NOTTY SMM Panel",
+  "description": "A powerful, white-label Social Media Marketing panel with automated provider integration, advanced order tracking, and an AI-powered support agent.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
