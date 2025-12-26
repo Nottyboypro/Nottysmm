@@ -1,14 +1,16 @@
 
-import React, { useState } from 'react';
-import { Tag, Plus, X, Calendar, UserCheck, Copy, Check, Hash } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Tag, Plus, X, Calendar } from 'lucide-react';
 import { Coupon } from '../types.ts';
+import { SMMServiceAPI } from '../services/smmService.ts';
 
 const AdminCouponManager: React.FC = () => {
   const [showCreate, setShowCreate] = useState(false);
-  const [coupons, setCoupons] = useState<Coupon[]>([
-    { id: '1', code: 'NOTTY20', type: 'Percentage', value: 20, usageLimit: 100, usedCount: 42, expiry: '2023-12-31', status: 'Active' },
-    { id: '2', code: 'WELCOME5', type: 'Fixed', value: 5, usageLimit: 500, usedCount: 500, expiry: '2023-10-01', status: 'Expired' },
-  ]);
+  const [coupons, setCoupons] = useState<Coupon[]>([]);
+
+  useEffect(() => {
+    SMMServiceAPI.getCoupons().then(data => setCoupons(data)).catch(() => setCoupons([]));
+  }, []);
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
@@ -27,7 +29,11 @@ const AdminCouponManager: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {coupons.map(coupon => (
+        {coupons.length === 0 ? (
+            <div className="col-span-full p-12 text-center bg-slate-900 rounded-[2.5rem] border border-slate-800">
+                <p className="text-slate-500 font-black uppercase tracking-widest">No Active Coupons in Database</p>
+            </div>
+        ) : coupons.map(coupon => (
           <div key={coupon.id} className={`bg-slate-900 border ${coupon.status === 'Active' ? 'border-blue-500/20 shadow-blue-950/20' : 'border-slate-800 opacity-60'} p-8 rounded-[2.5rem] shadow-2xl relative overflow-hidden group transition-all`}>
             {coupon.status === 'Active' && <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/5 rounded-full blur-2xl -mr-16 -mt-16"></div>}
             
@@ -48,22 +54,11 @@ const AdminCouponManager: React.FC = () => {
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <div className="flex justify-between text-[10px] font-black text-slate-600 uppercase">
-                  <span>Usage: {coupon.usedCount} / {coupon.usageLimit}</span>
-                  <span>{Math.round((coupon.usedCount / coupon.usageLimit) * 100)}%</span>
-                </div>
-                <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
-                  <div className={`h-full bg-blue-600 transition-all`} style={{ width: `${(coupon.usedCount / coupon.usageLimit) * 100}%` }}></div>
-                </div>
-              </div>
-
               <div className="flex items-center justify-between pt-4 border-t border-white/5">
                 <div className="flex items-center text-slate-500 space-x-1.5">
                   <Calendar size={12} />
                   <span className="text-[10px] font-black uppercase tracking-tight">Until {coupon.expiry}</span>
                 </div>
-                <button className="text-[10px] font-black uppercase tracking-widest text-rose-500 hover:text-rose-400">Delete</button>
               </div>
             </div>
           </div>
@@ -79,42 +74,7 @@ const AdminCouponManager: React.FC = () => {
                 <X size={24} />
               </button>
             </div>
-            
-            <form className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Coupon Code</label>
-                  <input type="text" placeholder="WINTER50" className="w-full bg-slate-800 border border-white/5 rounded-2xl px-5 py-4 text-sm font-black text-white outline-none focus:ring-2 focus:ring-blue-600" />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Type</label>
-                  <select className="w-full bg-slate-800 border border-white/5 rounded-2xl px-5 py-4 text-sm font-black text-white outline-none appearance-none">
-                    <option>Percentage</option>
-                    <option>Fixed Amount</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Discount Value</label>
-                  <input type="number" placeholder="20" className="w-full bg-slate-800 border border-white/5 rounded-2xl px-5 py-4 text-sm font-black text-white outline-none focus:ring-2 focus:ring-blue-600" />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Usage Limit</label>
-                  <input type="number" placeholder="100" className="w-full bg-slate-800 border border-white/5 rounded-2xl px-5 py-4 text-sm font-black text-white outline-none focus:ring-2 focus:ring-blue-600" />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Expiry Date</label>
-                <input type="date" className="w-full bg-slate-800 border border-white/5 rounded-2xl px-5 py-4 text-sm font-black text-white outline-none focus:ring-2 focus:ring-blue-600" />
-              </div>
-
-              <button className="w-full py-5 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-black text-lg shadow-xl shadow-blue-900/30 transition-all">
-                Activate Promotion
-              </button>
-            </form>
+            <p className="text-center text-slate-500 text-xs font-black uppercase tracking-widest mb-4">Feature not enabled in database config</p>
           </div>
         </div>
       )}

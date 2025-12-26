@@ -36,6 +36,7 @@ export interface Order {
   start_count?: string;
   remains?: string;
   createdAt: string;
+  timestamp?: number; // Added for sorting
   canRefill: boolean;
   refillStatus?: 'None' | 'Requested' | 'Processing' | 'Completed' | 'Rejected';
   providerOrderId?: string;
