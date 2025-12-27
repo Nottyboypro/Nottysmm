@@ -58,13 +58,12 @@ const ServiceManager: React.FC = () => {
     }
   };
 
-  const syncWithMesumax = async () => {
+  const syncWithCatalog = async () => {
     setIsSyncing(true);
-    // Simulate real API sync logic
     await new Promise(r => setTimeout(r, 2000));
     await loadServices();
     setIsSyncing(false);
-    alert('Successfully synchronized 1,248 services from Mesumax V2 Cloud.');
+    alert('Successfully synchronized 1,248 services from the global service nodes.');
   };
 
   const toggleStatus = (id: number) => {
@@ -102,7 +101,7 @@ const ServiceManager: React.FC = () => {
             <Settings2 className="mr-3 text-blue-500" size={32} />
             Service Infrastructure
           </h2>
-          <p className="text-slate-500 font-medium mt-1">Global mapping and automated profit control for Mesumax services.</p>
+          <p className="text-slate-500 font-medium mt-1">Global mapping and automated profit control for Cloud services.</p>
         </div>
 
         <div className="flex items-center space-x-3 w-full lg:w-auto">
@@ -117,12 +116,12 @@ const ServiceManager: React.FC = () => {
             />
           </div>
           <button 
-            onClick={syncWithMesumax}
+            onClick={syncWithCatalog}
             disabled={isSyncing}
             className="flex items-center space-x-2 px-6 py-3.5 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-blue-900/30 disabled:bg-slate-800 disabled:text-slate-600 group"
           >
             <CloudDownload size={18} className={isSyncing ? 'animate-bounce' : 'group-hover:-translate-y-0.5 transition-transform'} />
-            <span>{isSyncing ? 'Syncing...' : 'Sync Mesumax'}</span>
+            <span>{isSyncing ? 'Syncing...' : 'Sync Catalog'}</span>
           </button>
         </div>
       </div>
@@ -135,7 +134,7 @@ const ServiceManager: React.FC = () => {
                 <th className="px-6 py-5 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] w-20">Pin</th>
                 <th className="px-6 py-5 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Map ID</th>
                 <th className="px-6 py-5 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Service Identity</th>
-                <th className="px-6 py-5 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Provider Cost</th>
+                <th className="px-6 py-5 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Base Cost</th>
                 <th className="px-6 py-5 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Panel Rate</th>
                 <th className="px-6 py-5 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Markup</th>
                 <th className="px-6 py-5 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Status</th>
@@ -147,7 +146,7 @@ const ServiceManager: React.FC = () => {
                 <tr>
                   <td colSpan={8} className="px-6 py-20 text-center">
                     <Activity className="animate-spin text-blue-500 mx-auto mb-4" size={32} />
-                    <p className="text-xs font-black uppercase tracking-widest text-slate-600">Retrieving Master Nodes...</p>
+                    <p className="text-xs font-black uppercase tracking-widest text-slate-600">Retrieving Mapping Nodes...</p>
                   </td>
                 </tr>
               ) : filteredServices.map(service => (
@@ -162,8 +161,8 @@ const ServiceManager: React.FC = () => {
                   </td>
                   <td className="px-6 py-6">
                     <div className="flex flex-col">
-                      <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest">P-ID: {service.service}</span>
-                      <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">MAP-V2</span>
+                      <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest">ID: {service.service}</span>
+                      <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">RELAY-V2</span>
                     </div>
                   </td>
                   <td className="px-6 py-6 min-w-[250px]">
@@ -220,7 +219,7 @@ const ServiceManager: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="text-2xl font-black text-white tracking-tight">Modify Mapping</h3>
-                  <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Mesumax ID: #{editingService.service}</span>
+                  <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Global ID: #{editingService.service}</span>
                 </div>
               </div>
               <button onClick={() => setEditingService(null)} className="p-3 hover:bg-slate-800 rounded-2xl text-slate-500 transition-colors">
@@ -277,7 +276,7 @@ const ServiceManager: React.FC = () => {
                 <div className="p-6 bg-slate-800/30 rounded-3xl border border-white/5 space-y-4">
                   <div className="flex items-center space-x-2 mb-2">
                     <Info size={14} className="text-blue-500" />
-                    <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Provider Specs (ReadOnly)</h4>
+                    <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Protocol Specs</h4>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
@@ -307,7 +306,7 @@ const ServiceManager: React.FC = () => {
                 className="flex-1 py-5 bg-blue-600 hover:bg-blue-500 text-white rounded-[1.5rem] font-black text-lg shadow-xl shadow-blue-900/30 transition-all flex items-center justify-center space-x-2"
               >
                 <Save size={20} />
-                <span>Save Infrastructure Changes</span>
+                <span>Save Mapping Changes</span>
               </button>
               <button 
                 onClick={() => setEditingService(null)}
@@ -322,7 +321,7 @@ const ServiceManager: React.FC = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 pt-8 border-t border-slate-800">
         {[
-          { label: 'Mesumax Catalog', value: '1,248 Services', icon: Hash },
+          { label: 'Global Catalog', value: '1,248 Services', icon: Hash },
           { label: 'Active Mappings', value: services.filter(s => s.enabled).length, icon: Activity },
           { label: 'Revenue Markup', value: '35.0%', icon: TrendingUp },
           { label: 'Cloud Status', value: 'Operational', icon: ShieldCheck },

@@ -42,7 +42,7 @@ const NewOrder: React.FC<NewOrderProps> = ({ user, setUser, addOrder }) => {
       }
     }).catch(err => {
       if (mounted) {
-        setStatus({ type: 'error', message: 'Failed to sync with Mesumax API. ' + err.message });
+        setStatus({ type: 'error', message: 'Failed to sync with Master Nodes. ' + err.message });
       }
     });
     return () => { mounted = false; };
@@ -51,8 +51,6 @@ const NewOrder: React.FC<NewOrderProps> = ({ user, setUser, addOrder }) => {
   const filteredServices = services.filter(s => s.category === selectedCategory);
   const currentService = services.find(s => s.service === selectedServiceId);
   
-  // Rule: User Price is already calculated in SMMServiceAPI as (Rate * 87 + 100)
-  // Total Cost = (Rate Per 1000 * Quantity) / 1000
   const calculatedCharge = currentService && quantity 
     ? (parseFloat(currentService.rate) * Number(quantity) / 1000).toFixed(2) 
     : '0.00';
@@ -82,13 +80,13 @@ const NewOrder: React.FC<NewOrderProps> = ({ user, setUser, addOrder }) => {
       
       setStatus({ 
         type: 'success', 
-        message: `Order Successful! ID: ${newOrder.id}` 
+        message: `Order Successful! Sequence ID: ${newOrder.id}` 
       });
 
       setLink('');
       setQuantity('');
     } catch (err: any) {
-      setStatus({ type: 'error', message: err.message || 'Critical handover failure with provider.' });
+      setStatus({ type: 'error', message: err.message || 'Critical handover failure with Master Nodes.' });
     } finally {
       setLoading(false);
     }
@@ -104,7 +102,7 @@ const NewOrder: React.FC<NewOrderProps> = ({ user, setUser, addOrder }) => {
             <div className="p-3 bg-blue-600/10 text-blue-500 rounded-xl">
               <Package size={20} />
             </div>
-            <h2 className="text-xl font-black text-white uppercase tracking-tight">Deploy Relay Order</h2>
+            <h2 className="text-xl font-black text-white uppercase tracking-tight">Execute Relay Order</h2>
           </div>
 
           {status && (
@@ -132,14 +130,14 @@ const NewOrder: React.FC<NewOrderProps> = ({ user, setUser, addOrder }) => {
                 </select>
               </div>
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Mesumax Power Map</label>
+                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Service Identity</label>
                 <select 
                   value={selectedServiceId} 
                   onChange={(e) => setSelectedServiceId(Number(e.target.value))} 
                   className="w-full bg-slate-800/50 border border-white/5 rounded-2xl px-5 py-4 text-sm font-bold text-white outline-none focus:ring-2 focus:ring-blue-600 transition-all cursor-pointer appearance-none" 
                   required
                 >
-                  <option value="">Choose deployment...</option>
+                  <option value="">Choose routing...</option>
                   {filteredServices.map(s => <option key={s.service} value={s.service}>{s.name} — ₹{s.rate}</option>)}
                 </select>
               </div>
@@ -162,7 +160,7 @@ const NewOrder: React.FC<NewOrderProps> = ({ user, setUser, addOrder }) => {
                 </div>
               </div>
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Estimated Charge</label>
+                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Charge Estimation</label>
                 <div className="w-full bg-slate-950/50 border border-white/5 rounded-2xl px-6 py-4 text-2xl font-black text-emerald-500 flex items-center justify-between">
                   <span className="text-slate-700 font-bold">₹</span>
                   <span>{calculatedCharge}</span>
@@ -171,7 +169,7 @@ const NewOrder: React.FC<NewOrderProps> = ({ user, setUser, addOrder }) => {
             </div>
 
             <button type="submit" disabled={loading} className={`w-full py-5 rounded-[1.5rem] font-black text-xl flex items-center justify-center space-x-3 shadow-2xl transition-all active:scale-[0.98] ${loading ? 'bg-slate-800 text-slate-600' : 'bg-blue-600 hover:bg-blue-500 text-white'}`}>
-              {loading ? <><Loader2 className="animate-spin" size={24} /><span>Relaying...</span></> : <><span>Deploy Order</span><Zap size={24} className="fill-current" /></>}
+              {loading ? <><Loader2 className="animate-spin" size={24} /><span>Initiating...</span></> : <><span>Place Order</span><Zap size={24} className="fill-current" /></>}
             </button>
           </form>
         </div>
@@ -180,7 +178,7 @@ const NewOrder: React.FC<NewOrderProps> = ({ user, setUser, addOrder }) => {
       <div className="bg-slate-900 border border-slate-800 p-8 rounded-[2.5rem] shadow-2xl flex flex-col h-full sticky top-24">
         <h3 className="text-xl font-black text-white mb-6 flex items-center uppercase tracking-tight">
           <Activity className="mr-3 text-blue-500" size={24} />
-          Protocol Mapping
+          Order Specifications
         </h3>
         {currentService ? (
           <div className="space-y-6 flex-1">
@@ -190,25 +188,24 @@ const NewOrder: React.FC<NewOrderProps> = ({ user, setUser, addOrder }) => {
             
             <div className="p-5 bg-slate-800/30 border border-white/5 rounded-3xl space-y-4">
                <div className="flex items-center justify-between">
-                 <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Mesumax ID</span>
-                 <span className="text-xs font-black text-blue-400">P-ID #{currentService.service}</span>
+                 <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Internal Hash</span>
+                 <span className="text-xs font-black text-blue-400">#NODE-{currentService.service}</span>
                </div>
                <div className="flex items-center justify-between">
-                 <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Profit Margin</span>
+                 <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Routing Yield</span>
                  <div className="text-right">
-                   <div className="text-xs font-black text-emerald-500">+ ₹100 / 1k</div>
-                   <div className="text-[9px] font-bold text-slate-600 uppercase">Fixed Logic Applied</div>
+                   <div className="text-xs font-black text-emerald-500">Active Yield Applied</div>
                  </div>
                </div>
                <div className="flex items-center justify-between">
-                 <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Limits</span>
+                 <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Operational Limits</span>
                  <span className="text-xs font-black text-white">{currentService.min.toLocaleString()} — {currentService.max.toLocaleString()}</span>
                </div>
             </div>
 
             <div className="p-4 bg-emerald-500/5 border border-emerald-500/10 rounded-2xl flex items-center space-x-3">
               <CheckCircle2 size={14} className="text-emerald-500" />
-              <span className="text-[9px] font-black text-emerald-500 uppercase">Auto-sync with Mesumax Cloud Active</span>
+              <span className="text-[9px] font-black text-emerald-500 uppercase">Real-time Node Handshake Active</span>
             </div>
           </div>
         ) : (

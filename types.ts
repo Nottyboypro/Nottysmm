@@ -1,11 +1,13 @@
 
+
 export enum OrderStatus {
   PENDING = 'Pending',
   IN_PROGRESS = 'In Progress',
   COMPLETED = 'Completed',
   CANCELLED = 'Cancelled',
   PARTIAL = 'Partial',
-  PROCESSING = 'Processing'
+  PROCESSING = 'Processing',
+  FAILED = 'Failed'
 }
 
 export interface SMMService {
@@ -20,6 +22,21 @@ export interface SMMService {
   dripfeed: boolean;
   refill: boolean;
   cancel: boolean;
+  providerId?: string; // Which provider this belongs to
+  originalRate?: string; // Base rate from provider
+  pinned?: boolean;
+  enabled?: boolean;
+}
+
+export interface Provider {
+  id: string;
+  name: string;
+  url: string;
+  apiKey: string;
+  balance: number;
+  currency: string;
+  status: 'Active' | 'Inactive';
+  priority: number;
 }
 
 export interface Order {
@@ -32,14 +49,17 @@ export interface Order {
   quantity: number;
   charge: number;
   profit?: number;
+  providerSpending?: number;
   status: OrderStatus;
   start_count?: string;
   remains?: string;
   createdAt: string;
-  timestamp?: number; // Added for sorting
+  timestamp?: number;
   canRefill: boolean;
   refillStatus?: 'None' | 'Requested' | 'Processing' | 'Completed' | 'Rejected';
   providerOrderId?: string;
+  providerId?: string;
+  error?: string;
 }
 
 export interface User {
@@ -68,42 +88,41 @@ export interface Coupon {
   status: 'Active' | 'Expired';
 }
 
-export interface PaymentGateway {
-  id: string;
-  name: string;
-  status: 'Active' | 'Disabled';
-  fee: number;
-  minDeposit: number;
-}
-
 export interface SystemLog {
   id: string;
-  type: 'API' | 'SECURITY' | 'CRON' | 'WALLET';
+  type: 'API' | 'SECURITY' | 'CRON' | 'WALLET' | 'ADMIN';
   message: string;
   details: string;
   severity: 'Info' | 'Warning' | 'Critical';
   time: string;
+  timestamp: number;
 }
 
 export interface Ticket {
   id: string;
+  userId: string;
+  username: string;
   subject: string;
   orderId?: string;
   status: 'Open' | 'Answered' | 'Closed';
   priority: 'Low' | 'Medium' | 'High';
   lastUpdate: string;
+  createdAt?: number;
   messages: { role: 'user' | 'admin'; text: string; time: string }[];
 }
 
-export interface Notification {
-  id: string;
-  title: string;
-  message: string;
-  time: string;
-  read: boolean;
-  type: 'order' | 'system' | 'wallet';
+export interface PanelConfig {
+  name: string;
+  logo: string;
+  favicon: string;
+  banner: string;
+  bannerEnabled: boolean;
+  globalMarkup: number;
+  terms: string;
+  privacy: string;
 }
 
+// Added missing ActivityLog interface to fix compilation error in UserProfile.tsx
 export interface ActivityLog {
   id: string;
   event: string;
